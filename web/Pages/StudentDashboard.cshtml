@@ -1,0 +1,132 @@
+﻿@page
+@model web.Pages.StudentDashboardModel
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<section class="max-w-7xl mx-auto py-12 px-4 bg-white text-gray-900">
+    <h2 class="text-3xl font-bold mb-8 text-center">Личный кабинет</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-500 text-white px-4 py-3 rounded-lg mb-6 shadow-lg transition-opacity duration-300">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Профиль студента -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Профиль</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <p class="text-gray-600"><strong>Имя:</strong> @Model.StudentName</p>
+            <p class="text-gray-600"><strong>Группа:</strong> @(Model.GroupName ?? "Не указана")</p>
+            <p class="text-gray-600"><strong>Средний балл:</strong> @Model.AverageGrade.ToString("F1")</p>
+            <p class="text-gray-600"><strong>Прогресс курсов:</strong> @Model.CourseProgress.ToString("F1")%</p>
+        </div>
+    </div>
+
+    <!-- График оценок -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Ваши оценки</h3>
+        <canvas id="gradesChart" style="position: relative; height: 300px;"></canvas>
+    </div>
+
+    <!-- Ближайшие занятия -->
+    @if (Model.Courses.Any())
+    {
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Ближайшие занятия</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach (var course in Model.Courses.Where(c => c.NextSchedule != null))
+                {
+                    <div class="bg-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-blue-500 mb-2">@course.CourseName</h4>
+                        <p class="text-gray-600 text-sm mb-1"><strong>Преподаватель:</strong> @course.TeacherName</p>
+                        <p class="text-gray-600 text-sm mb-1"><strong>Дата:</strong> @course.NextSchedule.Date.ToString("dd.MM.yyyy")</p>
+                        <p class="text-gray-600 text-sm"><strong>Время:</strong> @course.NextSchedule.Time.ToString(@"hh\:mm")</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- История оценок -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">История оценок</h3>
+        @if (Model.Grades.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Курс</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Оценка</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-300">
+                        @foreach (var grade in Model.Grades)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.CourseName</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.Score</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.DateAssigned.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">Нет данных об оценках.</p>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const gradesCtx = document.getElementById('gradesChart').getContext('2d');
+            new Chart(gradesCtx, {
+                type: 'line',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.Grades.Select(g => $"\"{g.DateAssigned:dd.MM.yyyy}\"")))],
+                    datasets: [{
+                        label: 'Оценки',
+                        data: [@Html.Raw(string.Join(",", Model.Grades.Select(g => g.Score)))],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Оценка'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Дата'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

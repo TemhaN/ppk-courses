@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Информационные системы и программирование</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .compact-nav {
+            gap: 0.5rem;
+        }
+
+            .compact-nav a {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+            }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-inter bg-white text-gray-900">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 flex items-center justify-between">
+						<a href="/" class="flex items-center">
+								<img src="/image/logo.png" alt="ППК" class="h-10 sm:h-12 drop-shadow-md" />
+						</a>
+            <button id="burger" class="sm:hidden text-gray-700 focus:outline-none hover:text-blue-500 transition-colors">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            <nav id="nav-menu" class="hidden sm:flex sm:items-center compact-nav fixed sm:static top-0 right-0 h-full w-4/5 max-w-sm bg-white text-gray-900 p-8 sm:p-0 transition-transform duration-300 translate-x-full sm:translate-x-0 z-50">
+                <button id="close-menu" class="sm:hidden mb-6 text-gray-700 focus:outline-none hover:text-blue-500 transition-colors">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <a asp-page="/Index" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Главная</a>
+                @if (Context.Session.GetString("UserRole")?.ToLower() != "admin")
+                {
+                    <a asp-page="/Schedule" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Расписание</a>
+                }
+                @if (Context.Session.GetInt32("UserId").HasValue)
+                {
+                    @if (Context.Session.GetString("UserRole")?.ToLower() != "admin")
+                    {
+                        <a asp-page="/Grades" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Оценки</a>
+                        @if (Context.Session.GetString("UserRole")?.ToLower() == "student")
+                        {
+                            <a asp-page="/MySchedule" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Моё расписание</a>
+                            <a asp-page="/StudentDashboard" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Кабинет</a>
+                        }
+                        @if (Context.Session.GetString("UserRole")?.ToLower() == "teacher")
+                        {
+                            <a asp-page="/Attendance" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Посещаемость</a>
+                            <a asp-page="/TeacherDashboard" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Панель</a>
+                        }
+                    }
+                    <a asp-page="/ChangePassword" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Пароль</a>
+                    @if (Context.Session.GetString("UserRole")?.ToLower() == "admin")
+                    {
+                        <a asp-page="/Admin" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Админ</a>
+                    }
+                    <a asp-page="/Logout" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Выйти</a>
+                }
+                else
+                {
+                    <a asp-page="/Login" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Вход</a>
+                    <a asp-page="/Register" class="block py-4 sm:py-0 text-xl sm:text-sm font-medium hover:text-blue-500 transition-colors">Регистрация</a>
+                }
+            </nav>
+            <div id="overlay" class="fixed inset-0 bg-black/50 hidden sm:hidden z-40"></div>
+        </div>
+    </header>
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        @RenderBody()
+    </main>
+    <footer class="bg-white py-6">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-600">© 2025 Информационные системы и программирование</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <a asp-page="/About" class="text-xs sm:text-sm text-gray-600 hover:text-blue-500 transition-colors">О нас</a>
+                <a asp-page="/Privacy" class="text-xs sm:text-sm text-gray-600 hover:text-blue-500 transition-colors">Политика</a>
+                @if (!Context.Session.GetInt32("UserId").HasValue)
+                {
+                    <button onclick="openRegisterWindow()" class="bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-5 rounded-lg hover:bg-blue-600 transition-colors hover:-translate-y-0.5 shadow-md text-xs sm:text-sm">Заявка</button>
+                }
+                else
+                {
+                    @if (Context.Session.GetString("UserRole")?.ToLower() == "student")
+                    {
+                        <a asp-page="/StudentDashboard" class="bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-5 rounded-lg hover:bg-blue-600 transition-colors hover:-translate-y-0.5 shadow-md text-xs sm:text-sm">Кабинет</a>
+                    }
+                    else if (Context.Session.GetString("UserRole")?.ToLower() == "teacher")
+                    {
+                        <a asp-page="/TeacherDashboard" class="bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-5 rounded-lg hover:bg-blue-600 transition-colors hover:-translate-y-0.5 shadow-md text-xs sm:text-sm">Панель</a>
+                    }
+                    else if (Context.Session.GetString("UserRole")?.ToLower() == "admin")
+                    {
+                        <a asp-page="/Admin" class="bg-blue-500 text-white py-1 px-3 sm:py-2 sm:px-5 rounded-lg hover:bg-blue-600 transition-colors hover:-translate-y-0.5 shadow-md text-xs sm:text-sm">Админ</a>
+                    }
+                }
+            </div>
+        </div>
+    </footer>
+    <script>
+        const burger = document.getElementById('burger');
+        const closeMenu = document.getElementById('close-menu');
+        const navMenu = document.getElementById('nav-menu');
+        const overlay = document.getElementById('overlay');
+
+        burger.addEventListener('click', () => {
+            navMenu.classList.remove('hidden', 'translate-x-full');
+            overlay.classList.remove('hidden');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            navMenu.classList.add('hidden', 'translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        overlay.addEventListener('click', () => {
+            navMenu.classList.add('hidden', 'translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        function openRegisterWindow() {
+            window.open('/Register', 'RegisterWindow', 'width=500,height=600');
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

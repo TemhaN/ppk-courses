@@ -1,0 +1,500 @@
+﻿@page
+@model web.Pages.AdminModel
+@{
+    ViewData["Title"] = "Админ-панель";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-gray-900">
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-100 text-gray-900 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <div class="p-4 flex items-center justify-between">
+            <h1 class="text-xl font-bold">Админ-панель</h1>
+            <button id="close-sidebar" class="md:hidden text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <nav class="mt-2">
+            <a href="#users" class="block py-2 px-4 hover:bg-gray-200 text-sm flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                Пользователи
+            </a>
+            <a href="#courses" class="block py-2 px-4 hover:bg-gray-200 text-sm flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path>
+                </svg>
+                Курсы
+            </a>
+            <a href="#groups" class="block py-2 px-4 hover:bg-gray-200 text-sm flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Группы
+            </a>
+            <a href="#schedules" class="block py-2 px-4 hover:bg-gray-200 text-sm flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Расписание
+            </a>
+        </nav>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="open-sidebar" class="md:hidden fixed top-4 left-4 z-50 text-gray-600 hover:text-gray-900">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Main Content -->
+    <main class="p-4 md:ml-64 sm:p-6 max-w-7xl mx-auto">
+        <!-- Users Section -->
+        <section id="users" class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-semibold text-gray-900">Пользователи</h2>
+                </div>
+                <form method="get" class="flex items-center">
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z"></path>
+                        </svg>
+                        <input type="text" name="UserSearch" value="@Model.UserSearch" class="w-64 pl-10 pr-4 py-2 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" placeholder="Поиск по имени или email" />
+                    </div>
+                    <button type="submit" class="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300">Поиск</button>
+                </form>
+            </div>
+            <div id="users-loading" class="flex justify-center items-center h-32">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+            </div>
+            <div id="users-container" class="hidden overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-md text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden sm:table-cell">ID</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Имя</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden md:table-cell">Email</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden lg:table-cell">Роль</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden xl:table-cell">ФИО</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden xl:table-cell">Группа</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-300 opacity-0" style="--row-index: @(Model.Users.IndexOf(user))">
+                                <td class="py-3 px-4 text-gray-600 hidden sm:table-cell">@user.Id</td>
+                                <td class="py-3 px-4 text-gray-600">@user.Username</td>
+                                <td class="py-3 px-4 text-gray-600 hidden md:table-cell">@user.Email</td>
+                                <td class="py-3 px-4 text-gray-600 hidden lg:table-cell">@user.Role</td>
+                                <td class="py-3 px-4 text-gray-600 hidden xl:table-cell">@user.FullName</td>
+                                <td class="py-3 px-4 text-gray-600 hidden xl:table-cell">@(user.Group?.Name ?? "Нет")</td>
+                                <td class="py-3 px-4 flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
+                                    <form method="post" asp-page-handler="ChangeRole" class="inline">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="newRole" class="bg-gray-100 text-gray-900 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" onchange="this.form.submit()">
+                                            <option value="" selected>Роль</option>
+                                            <option value="Student">Студент</option>
+                                            <option value="Teacher">Преподаватель</option>
+                                            <option value="Admin">Администратор</option>
+                                        </select>
+                                    </form>
+                                    <form method="post" asp-page-handler="DeleteUser" class="inline">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 text-sm">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section id="courses" class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <h2 class="text-2xl font-semibold text-gray-900">Курсы</h2>
+                </div>
+                <form method="get" class="flex items-center">
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z"></path>
+                        </svg>
+                        <input type="text" name="CourseSearch" value="@Model.CourseSearch" class="w-64 pl-10 pr-4 py-2 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" placeholder="Поиск по названию курса" />
+                    </div>
+                    <button type="submit" class="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300">Поиск</button>
+                </form>
+            </div>
+            <form method="post" asp-page-handler="AddCourse" class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Название курса</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            <input type="text" name="CourseName" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required placeholder="Название курса" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Описание</label>
+                        <textarea name="Description" class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" placeholder="Описание курса"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Цена</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <input type="number" name="Price" min="0" step="0.01" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required placeholder="0.00" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">URL видео</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <input type="url" name="VideoUrl" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" placeholder="https://example.com/video" />
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg mt-4 hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Добавить курс</button>
+                @Html.AntiForgeryToken()
+            </form>
+            <div id="courses-loading" class="flex justify-center items-center h-32">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+            </div>
+            <div id="courses-container" class="hidden overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-md text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden sm:table-cell">ID</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Название</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden md:table-cell">Цена</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in Model.Courses)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-300 opacity-0" style="--row-index: @(Model.Courses.IndexOf(course))">
+                                <td class="py-3 px-4 text-gray-600 hidden sm:table-cell">@course.Id</td>
+                                <td class="py-3 px-4 text-gray-600">@course.CourseName</td>
+                                <td class="py-3 px-4 text-gray-600 hidden md:table-cell">@course.Price.ToString("C")</td>
+                                <td class="py-3 px-4">
+                                    <form method="post" asp-page-handler="DeleteCourse" class="inline">
+                                        <input type="hidden" name="courseId" value="@course.Id" />
+                                        <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 text-sm">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Groups Section -->
+        <section id="groups" class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-semibold text-gray-900">Группы</h2>
+                </div>
+            </div>
+            <form method="post" asp-page-handler="AddGroup" class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Название группы</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <input type="text" name="GroupName" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required placeholder="Название группы" />
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg mt-4 hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Добавить группу</button>
+                @Html.AntiForgeryToken()
+            </form>
+            <div id="groups-loading" class="flex justify-center items-center h-32">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+            </div>
+            <div id="groups-container" class="hidden overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-md text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden sm:table-cell">ID</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Название</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var group in Model.Groups)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-300 opacity-0" style="--row-index: @(Model.Groups.IndexOf(group))">
+                                <td class="py-3 px-4 text-gray-600 hidden sm:table-cell">@group.Id</td>
+                                <td class="py-3 px-4 text-gray-600">
+                                    <form method="post" asp-page-handler="EditGroup" class="inline">
+                                        <input type="hidden" name="groupId" value="@group.Id" />
+                                        <input type="text" name="GroupName" value="@group.Name" class="w-full bg-transparent border-0 text-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required />
+                                    </form>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <form method="post" asp-page-handler="DeleteGroup" class="inline">
+                                        <input type="hidden" name="groupId" value="@group.Id" />
+                                        <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 text-sm">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Schedules Section -->
+        <section id="schedules" class="mb-8">
+            <div class="flex items-center mb-6">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <h2 class="text-2xl font-semibold text-gray-900">Расписание</h2>
+            </div>
+            <form method="get" class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label asp-for="TeacherId" class="block text-sm font-medium text-gray-600 mb-2">Преподаватель</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <select asp-for="TeacherId" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" asp-items="@(new SelectList(Model.Teachers, "Id", "FullName"))">
+                                <option value="">Все преподаватели</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label asp-for="GroupId" class="block text-sm font-medium text-gray-600 mb-2">Группа</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <select asp-for="GroupId" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" asp-items="@(new SelectList(Model.Groups, "Id", "Name"))">
+                                <option value="">Все группы</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg mt-4 hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Фильтровать</button>
+            </form>
+            <div id="schedules-loading" class="flex justify-center items-center h-32">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+            </div>
+            <div id="schedules-container" class="hidden overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-md text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden sm:table-cell">ID</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Курс</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden md:table-cell">Преподаватель</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden lg:table-cell">Группа</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden xl:table-cell">Дата</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden xl:table-cell">Время</th>
+                            <th class="py-3 px-4 text-left text-gray-600 hidden xl:table-cell">Аудитория</th>
+                            <th class="py-3 px-4 text-left text-gray-600">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in Model.Schedules)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-300 opacity-0" style="--row-index: @(Model.Schedules.IndexOf(schedule))">
+                                <td class="py-3 px-4 text-gray-600 hidden sm:table-cell">@schedule.Id</td>
+                                <td class="py-3 px-4 text-gray-600">@(schedule.Course?.CourseName ?? "Не указан")</td>
+                                <td class="py-3 px-4 text-gray-600 hidden md:table-cell">@(schedule.User?.FullName ?? "Не указан")</td>
+                                <td class="py-3 px-4 text-gray-600 hidden lg:table-cell">
+                                    @(Model.ScheduleGroupNames.ContainsKey(schedule.Id) ? Model.ScheduleGroupNames[schedule.Id] : "Нет групп")
+                                </td>
+                                <td class="py-3 px-4 text-gray-600 hidden xl:table-cell">@schedule.Date.ToString("dd.MM.yyyy")</td>
+                                <td class="py-3 px-4 text-gray-600 hidden xl:table-cell">@schedule.Time.ToString(@"hh\:mm")</td>
+                                <td class="py-3 px-4 text-gray-600 hidden xl:table-cell">@schedule.Classroom</td>
+                                <td class="py-3 px-4">
+                                    <form method="post" asp-page-handler="DeleteSchedule" class="inline">
+                                        <input type="hidden" name="scheduleId" value="@schedule.Id" />
+                                        <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 text-sm">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Add Schedule Section -->
+        <section id="add-schedule" class="mb-8">
+            <div class="flex items-center mb-6">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <h2 class="text-2xl font-semibold text-gray-900">Добавить расписание</h2>
+            </div>
+            <form method="post" asp-page-handler="AddSchedule" class="bg-white p-6 rounded-xl shadow-md">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Курс</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            <select name="CourseId" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required>
+                                <option value="">Выберите курс</option>
+                                @foreach (var course in Model.Courses)
+                                {
+                                    <option value="@course.Id">@course.CourseName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Преподаватель</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <select name="TeacherId" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required>
+                                <option value="">Выберите преподавателя</option>
+                                @foreach (var teacher in Model.Teachers)
+                                {
+                                    <option value="@teacher.Id">@teacher.FullName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Группы</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <select name="GroupIds" multiple class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required>
+                                @foreach (var group in Model.Groups)
+                                {
+                                    <option value="@group.Id">@group.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Дата</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <input type="date" name="Date" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Время</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <input type="time" name="Time" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Аудитория</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            <input type="text" name="Classroom" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required placeholder="Аудитория" />
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg mt-4 hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Добавить</button>
+                @Html.AntiForgeryToken()
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Sidebar Toggle
+        const openSidebar = document.getElementById('open-sidebar');
+        const closeSidebar = document.getElementById('close-sidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        openSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+        });
+
+        function animateTable(tableId) {
+            const loading = document.getElementById(`${tableId}-loading`);
+            const container = document.getElementById(`${tableId}-container`);
+            const rows = container.querySelectorAll('tr');
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                container.classList.remove('hidden');
+                rows.forEach((row, index) => {
+                    setTimeout(() => {
+                        row.classList.remove('opacity-0');
+                        row.classList.add('opacity-100');
+                    }, index * 100);
+                });
+            }, 1000);
+        }
+
+        window.onload = function () {
+            animateTable('users');
+            animateTable('courses');
+            animateTable('groups');
+            animateTable('schedules');
+        };
+
+        document.querySelectorAll('form[asp-page-handler="EditGroup"] input[name="GroupName"]').forEach(input => {
+            input.addEventListener('blur', () => {
+                input.closest('form').submit();
+            });
+        });
+    </script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

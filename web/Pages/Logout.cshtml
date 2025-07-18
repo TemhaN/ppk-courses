@@ -1,0 +1,31 @@
+﻿@page
+@model LogoutModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выход из системы</title>
+    <meta http-equiv="refresh" content="2;url=/" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-white font-inter">
+    <div class="bg-gray-100 shadow-2xl rounded-xl p-8 text-center max-w-md mx-auto">
+        <div class="flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <h1 class="text-2xl font-bold text-gray-900">До свидания!</h1>
+        </div>
+        <p class="text-gray-600 text-lg mb-4">Вы вышли из системы. Перенаправляем на главную...</p>
+        <svg class="w-10 h-10 text-blue-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"></path>
+        </svg>
+    </div>
+</body>
+</html>

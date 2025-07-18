@@ -1,0 +1,52 @@
+﻿@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Политика конфиденциальности";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-gray-900">
+    <main class="max-w-4xl mx-auto py-12 px-4">
+        <section class="bg-gray-100 shadow-2xl rounded-xl p-8">
+            <div class="flex items-center mb-6">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm4 0c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm-8 0c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm12-2h-2V7a5 5 0 00-10 0v2H4v10h16V9zm-2 0H6V7a3 3 0 016 0v2z"></path>
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-900">Политика конфиденциальности</h1>
+            </div>
+            <div class="space-y-6">
+                <p class="text-gray-600">Мы серьёзно относимся к защите ваших данных. На этой странице описано, как мы собираем, используем и защищаем вашу личную информацию.</p>
+                <div class="bg-gray-200 rounded-lg p-4">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Сбор информации</h2>
+                    <p class="text-gray-600">Мы собираем только те данные, которые вы предоставляете при регистрации, оплате курсов или использовании нашего сайта, такие как имя, email и информация о курсах.</p>
+                </div>
+                <div class="bg-gray-200 rounded-lg p-4">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Использование данных</h2>
+                    <p class="text-gray-600">Ваши данные используются для предоставления услуг, обработки платежей и улучшения нашего сервиса. Мы не передаём вашу информацию третьим лицам без вашего согласия.</p>
+                </div>
+                <div class="bg-gray-200 rounded-lg p-4">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Безопасность</h2>
+                    <p class="text-gray-600">Мы применяем современные технологии шифрования и другие меры безопасности для защиты ваших данных от несанкционированного доступа.</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600">Если у вас есть вопросы, свяжитесь с нами:</p>
+                    <a href="mailto:support@example.com" class="inline-flex items-center text-blue-500 mt-2">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l9-6 9 6v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                        </svg>
+                        support@example.com
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

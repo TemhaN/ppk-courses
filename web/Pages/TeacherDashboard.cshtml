@@ -1,0 +1,235 @@
+﻿@page
+@model web.Pages.TeacherDashboardModel
+@{
+    ViewData["Title"] = "Панель учителя";
+}
+
+<section class="max-w-7xl mx-auto py-12 px-4 bg-white text-gray-900">
+    <h2 class="text-3xl font-bold mb-8 text-center">Панель учителя</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-500 text-white px-4 py-3 rounded-lg mb-6 shadow-lg transition-opacity duration-300">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Фильтры -->
+    <div class="mb-8">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label asp-for="CourseId" class="block text-sm font-medium text-gray-600 mb-2">Курс</label>
+                <select asp-for="CourseId" class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" asp-items="@(new SelectList(Model.Courses, "Id", "CourseName"))">
+                    <option value="">Все курсы</option>
+                </select>
+            </div>
+            <div>
+                <label asp-for="GroupId" class="block text-sm font-medium text-gray-600 mb-2">Группа</label>
+                <select asp-for="GroupId" class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-100 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" asp-items="@(new SelectList(Model.Groups, "Id", "Name"))">
+                    <option value="">Все группы</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md w-full">Фильтровать</button>
+            </div>
+        </form>
+
+        <!-- Форма экспорта -->
+        <form method="post" asp-page-handler="ExportToExcel" class="mt-4">
+            <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+            <button type="submit" class="bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition-all duration-300 shadow-md">Экспорт в Excel</button>
+        </form>
+    </div>
+
+    <!-- Основная статистика -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Студентов</h3>
+            <p class="text-3xl font-bold text-blue-500">@Model.TotalStudents</p>
+        </div>
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Средняя оценка</h3>
+            <p class="text-3xl font-bold text-blue-500">@Model.AverageGrade.ToString("F1")</p>
+        </div>
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Посещаемость</h3>
+            <p class="text-3xl font-bold text-blue-500">@Model.AttendancePercentage.ToString("F1")%</p>
+        </div>
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Курсов</h3>
+            <p class="text-3xl font-bold text-blue-500">@Model.Courses.Count</p>
+        </div>
+    </div>
+
+    <!-- Графики и диаграммы -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- График средних оценок по курсам -->
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Средние оценки по курсам</h3>
+            <canvas id="courseGradesChart" style="position: relative; height: 300px;"></canvas>
+        </div>
+
+        <!-- Посещаемость по группам -->
+        <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Посещаемость по группам</h3>
+            <canvas id="attendanceChart" style="position: relative; height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Лучшие студенты -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Лучшие студенты</h3>
+        @if (Model.TopStudents.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                @foreach (var student in Model.TopStudents)
+                {
+                    <div class="bg-gray-200 rounded-lg p-4 text-center">
+                        <h4 class="font-medium text-blue-500 mb-1">@student.StudentName</h4>
+                        <p class="text-gray-600 text-sm mb-1">@student.GroupName</p>
+                        <p class="text-2xl font-bold text-green-500">@student.AverageGrade.ToString("F1")</p>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">Нет данных о студентах.</p>
+        }
+    </div>
+
+    <!-- Детальная статистика по курсам -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Статистика по курсам</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Курс</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Средняя оценка</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Студентов</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Посещаемость</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-300">
+                    @foreach (var course in Model.CourseStats)
+                    {
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">@course.CourseName</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">@course.AverageGrade.ToString("F1")</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">@course.StudentCount</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600">@course.AttendanceRate.ToString("F1")%</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Оценки студентов -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Оценки студентов</h3>
+        @if (Model.StudentGrades.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Студент</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Группа</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Курс</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Оценка</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-300">
+                        @foreach (var grade in Model.StudentGrades)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.StudentName</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@(grade.GroupName ?? "Нет группы")</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.CourseName</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.Score</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-gray-600">@grade.DateAssigned.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">Нет данных об оценках.</p>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // График средних оценок по курсам
+            const gradesCtx = document.getElementById('courseGradesChart').getContext('2d');
+            new Chart(gradesCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.CourseStats.Select(cs => cs.CourseName))),
+                    datasets: [{
+                        label: 'Средняя оценка',
+                        data: @Html.Raw(Json.Serialize(Model.CourseStats.Select(cs => cs.AverageGrade))),
+                        backgroundColor: '#3B82F6',
+                        borderColor: '#1D4ED8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Оценка' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Курс' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // График посещаемости по группам
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(attendanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.AttendanceStats.Select(a => a.GroupName))),
+                    datasets: [{
+                        data: @Html.Raw(Json.Serialize(Model.AttendanceStats.Select(a => a.AttendanceRate))),
+                        backgroundColor: [
+                            '#10B981',
+                            '#3B82F6',
+                            '#F97316',
+                            '#8B5CF6',
+                            '#EF4444'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: 'right' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

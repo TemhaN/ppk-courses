@@ -1,0 +1,14 @@
+.git
+*.log
+*.md
+*.tmp
+node_modules
+obj
+bin
+.vscode
+.idea
+test
+tests
+*.user
+**/bin/
+**/obj/

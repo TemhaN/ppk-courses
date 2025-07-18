@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=sabzor04_db;User Id=sa;Password=StrongPass123!;TrustServerCertificate=True
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - app-network
+    volumes:
+      - ./data:/app/data
+      - dataprotection_keys:/root/.aspnet/DataProtection-Keys
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    restart: always
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPass123!
+      - MSSQL_PID=Express
+    volumes:
+      - sqlserver_data3:/var/opt/mssql
+    networks:
+      - app-network
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'StrongPass123!' -Q 'SELECT 1' -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./web/nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/letsencrypt:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    networks:
+      - app-network
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/letsencrypt:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+    networks:
+      - app-network
+
+volumes:
+  sqlserver_data3:
+  dataprotection_keys:
+
+networks:
+  app-network:
+    driver: bridge
+    name: app-network
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1

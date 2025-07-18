@@ -1,0 +1,55 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ошибка";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-gray-900">
+    <main class="max-w-4xl mx-auto py-12 px-4">
+        <section class="bg-white shadow-2xl rounded-xl p-8">
+            <div class="flex items-center mb-6">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <h1 class="text-3xl font-bold text-blue-500">Ошибка</h1>
+            </div>
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-blue-400">Произошла ошибка при обработке вашего запроса.</h2>
+                @if (Model.ShowRequestId)
+                {
+                    <p class="text-gray-600">
+                        <strong>Идентификатор запроса:</strong> <code class="bg-gray-200 px-2 py-1 rounded">@Model.RequestId</code>
+                    </p>
+                }
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Режим разработки</h3>
+                    <p class="text-gray-600">
+                        Переключение на среду <strong>Development</strong> позволяет отображать подробную информацию об ошибке.
+                    </p>
+                    <p class="text-gray-600 mt-2">
+                        <strong>Среда разработки не должна быть включена для развёрнутых приложений.</strong>
+                        Это может привести к раскрытию конфиденциальной информации из исключений. Для локальной отладки включите среду <strong>Development</strong>, установив переменную окружения <strong>ASPNETCORE_ENVIRONMENT</strong> в значение <strong>Development</strong> и перезапустив приложение.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-6">
+                <a href="/" class="inline-flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 hover:-translate-y-0.5 transition-all duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Вернуться на главную
+                </a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

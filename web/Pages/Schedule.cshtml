@@ -1,0 +1,236 @@
+﻿@page
+@model web.Pages.ScheduleModel
+@{
+    ViewData["Title"] = "Расписание";
+}
+
+<section class="max-w-7xl mx-auto py-12 px-4 bg-white text-gray-900">
+    <h2 class="text-3xl font-bold mb-8 text-center">Расписание занятий</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-500 text-white px-4 py-3 rounded-lg mb-6 shadow-lg transition-opacity duration-300">
+            @TempData["Error"]
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-green-500 text-white px-4 py-3 rounded-lg mb-6 shadow-lg transition-opacity duration-300">
+            @TempData["Success"]
+        </div>
+    }
+
+    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-600 mb-2">Поиск (курс или преподаватель)</label>
+            <div class="relative">
+                <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input name="searchQuery" value="@Model.SearchQuery" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" placeholder="Поиск" />
+            </div>
+        </div>
+        <div>
+            <label asp-for="GroupId" class="block text-sm font-medium text-gray-600 mb-2">Группа</label>
+            <div class="relative">
+                <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <select asp-for="GroupId" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" asp-items="@(new SelectList(Model.Groups, "Id", "Name"))">
+                    <option value="">Все группы</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label asp-for="Date" class="block text-sm font-medium text-gray-600 mb-2">Дата</label>
+            <div class="relative">
+                <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <input asp-for="Date" type="date" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+            <span asp-validation-for="Date" class="text-red-500 text-xs mt-1 block"></span>
+        </div>
+        <div class="flex items-end">
+            <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Поиск</button>
+        </div>
+    </form>
+
+    <form method="post" asp-page-handler="Export" class="mb-8">
+        <input type="hidden" name="searchQuery" value="@Model.SearchQuery" />
+        <input type="hidden" name="GroupId" value="@Model.GroupId" />
+        <input type="hidden" name="Date" value="@Model.Date?.ToString("yyyy-MM-dd")" />
+        <button type="submit" class="bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-md">Экспорт в Excel</button>
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div id="schedules-loading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+    </div>
+    <div id="schedules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+        @if (Model.Schedules?.Any() == true)
+        {
+            @foreach (var schedule in Model.Schedules)
+            {
+                <div class="bg-gray-100 rounded-xl shadow-lg p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 opacity-0 group-hover:opacity-100" style="--card-index: @(Model.Schedules.IndexOf(schedule))">
+                    <a asp-page="/CourseDetails" asp-route-id="@schedule.CourseId" class="block">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3 hover:text-blue-500 transition-colors duration-300">
+                            @(schedule.Course?.CourseName ?? "Не указан")
+                        </h3>
+                    </a>
+                    <p class="text-gray-600 mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>@schedule.Date.ToString("dd.MM.yyyy")</span>
+                    </p>
+                    <p class="text-gray-600 mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>@schedule.Time.ToString(@"hh\:mm")</span>
+                    </p>
+                    <p class="text-gray-600 mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span>@(schedule.User?.FullName ?? "Не указан")</span>
+                    </p>
+                    <p class="text-gray-600 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span>@(schedule.Classroom ?? "Не указана")</span>
+                    </p>
+
+                    @if (Model.UserId.HasValue && !Model.IsTeacher && !Model.IsEnrolled(schedule.Id))
+                    {
+                        <form method="post" asp-page-handler="Enroll" class="inline">
+                            <input type="hidden" name="scheduleId" value="@schedule.Id" />
+                            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300 w-full">Записаться</button>
+                        </form>
+                    }
+                    else if (Model.UserId.HasValue && Model.IsEnrolled(schedule.Id))
+                    {
+                        <p class="text-green-500 text-center py-2">Вы уже записаны</p>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-gray-600 text-sm text-center col-span-full">Нет доступных расписаний.</p>
+        }
+    </div>
+
+    @if (Model.ShowPaymentModal)
+    {
+        <div id="paymentModal" class="modal show">
+            <div class="modal-content bg-gray-100 rounded-2xl p-8 shadow-2xl transition-opacity duration-300 opacity-0 hover:opacity-100">
+                <div class="flex items-center mb-4">
+                    <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                    <h3 class="text-xl font-bold text-gray-900">Оплата курса</h3>
+                </div>
+                <p class="text-gray-600 mb-6 text-sm">@(Model.SelectedCourseName ?? "Неизвестный курс")</p>
+                <form method="post" asp-page-handler="Pay" class="space-y-5">
+                    <input type="hidden" name="userId" value="@Model.UserId" />
+                    <input type="hidden" name="scheduleId" value="@TempData["SelectedScheduleId"]" />
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Номер карты (16 цифр)</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            <input type="text" name="cardNumber" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" maxlength="16" pattern="\d{16}" required placeholder="1234 5678 9012 3456" />
+                        </div>
+                        <span class="text-red-500 text-xs mt-1 block">@(ViewData["PaymentError"] ?? "")</span>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Имя на карте</label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <input type="text" name="cardHolder" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" required placeholder="IVAN IVANOV" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Срок действия</label>
+                            <div class="flex gap-2">
+                                <input type="text" name="expiryMonth" class="w-16 pl-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" maxlength="2" pattern="0[1-9]|1[0-2]" placeholder="MM" required />
+                                <span class="self-center text-gray-600">/</span>
+                                <input type="text" name="expiryYear" class="w-16 pl-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" maxlength="2" pattern="[0-9]{2}" placeholder="YY" required />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">CVV (3 цифры)</label>
+                            <div class="relative">
+                                <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm4 0c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm-8 0c0-1.104-.896-2-2-2s-2 .896-2 2v3h4v-3zm12-2h-2V7a5 5 0 00-10 0v2H4v10h16V9zm-2 0H6V7a3 3 0 016 0v2z"></path>
+                                </svg>
+                                <input type="text" name="cvv" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-200 border-0 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300" maxlength="3" pattern="\d{3}" required placeholder="123" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="closeModal()" class="bg-gray-600 text-gray-200 py-3 px-6 rounded-lg hover:bg-gray-700 hover:-translate-y-1 active:scale-95 transition-all duration-300">Отмена</button>
+                        <button type="submit" class="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 hover:-translate-y-1 active:scale-95 transition-all duration-300">Оплатить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</section>
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+        .modal.show {
+            display: flex;
+        }
+</style>
+
+<script>
+    function closeModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+    window.onload = function () {
+    @if (Model.ShowPaymentModal)
+    {
+        @:document.getElementById('paymentModal').classList.add('show');
+    }
+        const expiryMonth = document.querySelector('input[name="expiryMonth"]');
+        const expiryYear = document.querySelector('input[name="expiryYear"]');
+        if (expiryMonth && expiryYear) {
+            expiryMonth.addEventListener('input', function () {
+                if (this.value.length === 2) {
+                    expiryYear.focus();
+                }
+            });
+        }
+
+        const loading = document.getElementById('schedules-loading');
+        const container = document.getElementById('schedules-container');
+        const cards = container.querySelectorAll('div');
+        setTimeout(() => {
+            loading.classList.add('hidden');
+            container.classList.remove('hidden');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.remove('opacity-0');
+                    card.classList.add('opacity-100');
+                }, index * 100);
+            });
+        }, 1000);
+    };
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

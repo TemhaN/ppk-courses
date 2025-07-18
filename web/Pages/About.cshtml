@@ -1,0 +1,54 @@
+﻿@page
+@model web.Pages.AboutModel
+@{
+    ViewData["Title"] = "О нас";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-gray-900">
+    <main class="max-w-4xl mx-auto py-12 px-4">
+        <section class="bg-white shadow-2xl rounded-xl p-8">
+            <div class="flex items-center mb-6">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-900">О нас</h1>
+            </div>
+            <div class="space-y-6">
+                <p class="text-gray-600">Добро пожаловать в наше веб-приложение! Мы — платформа для обучения, которая помогает студентам и преподавателям эффективно взаимодействовать.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-gray-100 rounded-lg p-4">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">Наша миссия</h2>
+                        <p class="text-gray-600">Мы стремимся сделать образование доступным и удобным, предоставляя инструменты для управления курсами, расписаниями и оценками.</p>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-4">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">Почему выбирают нас</h2>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600">
+                            <li>Интуитивно понятный интерфейс.</li>
+                            <li>Безопасная обработка данных.</li>
+                            <li>Поддержка 24/7 через <a href="mailto:support@example.com" class="text-blue-500">support@example.com</a>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600">Присоединяйтесь к нам и начните свой образовательный путь!</p>
+                    <a href="mailto:support@example.com" class="inline-flex items-center text-blue-500 mt-2">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l9-6 9 6v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                        </svg>
+                        Связаться с нами
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

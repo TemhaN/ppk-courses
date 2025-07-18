@@ -1,0 +1,171 @@
+﻿@page "{id:int}"
+@model web.Pages.CourseDetailsModel
+@{
+    ViewData["Title"] = Model.Course?.CourseName ?? "Курс";
+
+    string videoId = null;
+    if (!string.IsNullOrEmpty(Model.Course?.VideoUrl))
+    {
+        try
+        {
+            var uri = new Uri(Model.Course.VideoUrl);
+            if (uri.Host.Contains("rutube.ru"))
+            {
+                videoId = uri.Segments.LastOrDefault()?.TrimEnd('/');
+            }
+        }
+        catch
+        {
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-gray-900">
+    <main class="max-w-6xl mx-auto py-12 px-4">
+        <!-- Notifications -->
+        @if (TempData["Error"] != null)
+        {
+            <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
+                @TempData["Error"]
+            </div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="fixed top-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
+                @TempData["Success"]
+            </div>
+        }
+
+        <!-- Header and Video -->
+        <section class="mb-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-8 h-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path>
+                </svg>
+                <h2 class="text-3xl font-bold text-gray-900">@Model.Course.CourseName</h2>
+            </div>
+            @if (!string.IsNullOrEmpty(videoId))
+            {
+                <div class="bg-gray-100 rounded-xl shadow-2xl p-4">
+                    <div class="relative w-full" style="padding-bottom: 56.25%;">
+                        <iframe class="absolute top-0 left-0 w-full h-full rounded-lg"
+                                src="https://rutube.ru/play/embed/@videoId/"
+                                title="@Model.Course.CourseName"
+                                frameborder="0"
+                                allow="clipboard-write; autoplay"
+                                webkitAllowFullScreen
+                                mozallowfullscreen
+                                allowfullscreen></iframe>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Model.Course.VideoUrl))
+            {
+                <div class="bg-gray-100 rounded-xl shadow-2xl p-4">
+                    <a href="@Model.Course.VideoUrl" target="_blank" class="flex items-center text-blue-500">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Смотреть видео
+                    </a>
+                </div>
+            }
+        </section>
+
+        <!-- Description and Schedule -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Description -->
+            <section class="bg-gray-100 rounded-xl shadow-2xl p-6">
+                <div class="flex items-center mb-4">
+                    <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold text-gray-900">О курсе</h3>
+                </div>
+                <p class="text-gray-600 mb-4">@Model.Course.Description</p>
+                @if (!Model.IsCoursePurchased)
+                {
+                    <p class="text-gray-600"><strong>Цена:</strong> @Model.Course.Price.ToString("C")</p>
+                }
+            </section>
+
+            <!-- Schedule -->
+            <section class="bg-gray-100 rounded-xl shadow-2xl p-6">
+                <div class="flex items-center mb-4">
+                    <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold text-gray-900">Расписание</h3>
+                </div>
+                @if (Model.Course.Schedules?.Any() == true)
+                {
+                    <div class="space-y-4">
+                        @foreach (var schedule in Model.Course.Schedules.OrderBy(s => s.Date).ThenBy(s => s.Time))
+                        {
+                            <div class="bg-gray-200 rounded-lg p-4">
+                                <p class="text-gray-600"><span class="text-blue-500">Дата:</span> @schedule.Date.ToString("dd.MM.yyyy")</p>
+                                <p class="text-gray-600"><span class="text-blue-500">Время:</span> @schedule.Time.ToString(@"hh\:mm")</p>
+                                <p class="text-gray-600"><span class="text-blue-500">Преподаватель:</span> @(schedule.User?.FullName ?? "Не указан")</p>
+                                <p class="text-gray-600"><span class="text-blue-500">Аудитория:</span> @(schedule.Classroom ?? "Не указана")</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-gray-600">Расписание пока не доступно.</p>
+                }
+            </section>
+        </div>
+
+        @if (Model.UserId.HasValue && !Model.IsTeacher && !Model.IsCoursePurchased && Model.Course.Schedules?.Any() == true)
+        {
+            <section class="text-center">
+                <form method="post" asp-page="/Schedule" asp-page-handler="Enroll">
+                    <input type="hidden" name="scheduleId" value="@Model.Course.Schedules.OrderBy(s => s.Date).ThenBy(s => s.Time).First().Id" />
+                    <button type="submit" class="bg-blue-500 text-white py-3 px-8 rounded-lg shadow-md flex items-center justify-center mx-auto hover:bg-blue-600 hover:-translate-y-0.5 transition-all duration-300">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Записаться на курс
+                    </button>
+                </form>
+            </section>
+        }
+        else if (Model.UserId.HasValue && Model.IsTeacher)
+        {
+            <section class="text-center">
+                <p class="text-gray-600">Преподаватели не могут записываться на курсы.</p>
+            </section>
+        }
+        else if (Model.UserId.HasValue && Model.IsCoursePurchased)
+        {
+            <section class="text-center">
+                <p class="text-gray-600">Вы уже записаны на этот курс.</p>
+            </section>
+        }
+        else if (Model.UserId.HasValue && !(Model.Course.Schedules?.Any() == true))
+        {
+            <section class="text-center">
+                <p class="text-gray-600">Расписание недоступно. Попробуйте позже.</p>
+            </section>
+        }
+        else
+        {
+            <section class="text-center">
+                <p class="text-gray-600">Войдите, чтобы записаться на курс.</p>
+            </section>
+        }
+    </main>
+</body>
+</html>
